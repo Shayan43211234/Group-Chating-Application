@@ -1,0 +1,209 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is the REST API documentation of GroupChatApplication:)",
+    "version": "1.0.0",
+    "title": "GroupChatApplication",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "shayan.mukherjee@manipalglobal.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "/v2",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/users/adduser": {
+      "post": {
+        "tags":[
+          "addUser"
+        ],
+        "summary": "Add/Join A User",
+        "description": "To Add a User Into the Chating Application Group",
+        "operationId": "addUser",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "user object that need to be added into the user collection",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddUser"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/users/addmessage":{
+      "post": {
+        "tags":[
+          "addMessage"
+        ],
+        "summary": "Send A Message",
+        "description": "Send a Message to The Chating Application Group",
+        "operationId": "addMessage",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "message & userid object that need to be added into the message collection",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddMessage"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/users/getmessage":{
+      "get":{
+        "tags":[
+          "getMessage"
+        ],
+        "summary": "Finds message and userid by status",
+        "description": "Multiple message and userid values can be provided with comma separated strings",
+        "operationId": "getmessage",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+			  "items": {
+                "$ref": ""
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/users/getuser":{
+      "get":{
+        "tags":[
+          "getUser"
+        ],
+        "summary": "Finds user by status",
+        "description": "Multiple user values can be provided with comma separated strings",
+        "operationId": "getuser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+			  "items": {
+                "$ref": ""
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "petstore_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "http://petstore.swagger.io/oauth/dialog",
+      "flow": "implicit",
+      "scopes": {
+        "write:pets": "modify user in your account",
+        "read:pets": "read your user"
+      }
+    },
+    "api_key": {
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "AddUser":{
+      "type": "object",
+      "required":[
+        "Name"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "example":"Shayan"
+        }
+      },
+      "xml": {
+        "name": "AddUser"
+      }
+    },
+    "AddMessage":{
+      "type": "object",
+      "required":[
+        "message",
+        "userid"
+      ],
+      "properties": {
+        "message": {
+          "type": "string",
+          "example":"Hi Shayan"
+        },
+        "userid":{
+          "type":"string",
+          "example":"5e2eb1491b9fba2f20dd2440"
+        }
+      },
+      "xml": {
+        "name":"AddMessage"
+      }
+    }
+  },
+  
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}

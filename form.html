@@ -1,0 +1,184 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Welcome To Group Chat Application</title>
+	
+	<script>
+			
+			var socket = io.connect('http://localhost:5000');
+  			socket.on('news', function (data) {
+    		console.log(data);
+    		socket.emit('news', { my: 'santanu' });
+  			});
+
+			$(document).ready(function(){
+
+				if(localStorage.getItem('userId')==null)
+				{
+					$("#send").attr("disabled",true);
+					$("#logout").attr("disabled",true);
+					$("#join").attr("disabled",false);				
+				}
+				else
+				{
+					$("#join").attr("disabled",true);
+					$("#send").attr("disabled",false);
+					$("#logout").attr("disabled",false);
+				}
+
+  			$.ajax({
+
+				method:"GET",
+				url:"http://localhost:3000/users/getuser",
+				dataType:'json',
+				success: function(data)
+				{
+					var rpt="";
+					for (var i = 0; i <= data.users.length-1; i++) {
+							rpt+='<div>'+data.users[i].username+'</div>';
+						 }
+			
+						 $('#userlist').html(rpt);
+					
+				}
+			});
+
+			$.ajax({
+				method:"GET",
+				url:"http://localhost:3000/users/getmessage",
+				dataType:'json',
+				success:function(data)
+				{
+					var rpt="";
+					for (var i = 0; i <= data.message.length-1; i++)
+					{
+						rpt+='<div>'+data.message[i].name+"="+data.message[i].message+'</div>';
+					}
+					$('#messagelist').html(rpt);
+				}
+
+			});
+			
+			$("#name").keyup(function(event) {
+				if(localStorage.getItem('userId')==null){
+					if(event.keyCode === 13)
+					{
+						$("#join").click();
+					}
+				}
+				else{
+					alert("already login");
+				}
+			});
+
+  			$("#join").click(function(){
+  			
+  			var name=$("#name").val();
+
+    		var data={"Name":name};
+
+			$.ajax({
+			  method: "POST",
+			  url: "http://localhost:3000/users/adduser",
+			  data: data,
+			  dataType: 'json',
+				success: function(data)
+				{
+					let local=data.userDetails._id;
+					localStorage.setItem('userId',local);
+				},
+			})
+			  .done(function( msg ) {
+			  	    if(msg.status=="success"){
+						msg="You Saved successfully";
+			    		alert( "Data Saved: " + msg );
+			    		$("#join").attr("disabled",true);
+						$("#send").attr("disabled",false);
+						$("#logout").attr("disabled",false);
+						window.location.reload(true);
+					}
+					else
+					{
+						msg="username already exist";
+			    		alert( "Data Unsaved: " + msg );
+			    		$("#join").attr("disabled",false);
+						$("#send").attr("disabled",true);
+						$("#logout").attr("disabled",true);
+					}
+			  	
+			  });
+
+    		return false;
+
+  			});
+
+  			$("#logout").click(function(){
+  				
+  				localStorage.removeItem('userId');
+  				alert("You are successfully LogOut");
+  				$("#logout").attr("disabled",true);
+  				$("#send").attr("disabled",true);
+  				$("#join").attr("disabled",false);
+  				window.location.reload(true);
+  			});
+
+  			$("#message").keyup(function(event) {
+				if (event.keyCode === 13) {
+      			$("#send").click();
+				}
+			});
+
+
+  			$("#send").click(function(){
+  				
+  				var msg=$("#message").val();
+  				var id=localStorage.getItem('userId');
+  				var data={"userid":id,"message":msg};
+  				$.ajax({
+  					method: "POST",
+  					url: "http://localhost:3000/users/addmessage",
+  					data:data,
+  					dataType:'json'
+  				})
+  				.done(function(msg){
+  					msg="Your message send successfully"
+  					alert("Data Saved: "+msg);
+  					window.location.reload(true);
+  				});
+  				return false;
+  			});
+		});
+
+	</script>
+
+</head>
+<body>
+
+<h1>userName must be different</h1>
+<p><b>Note:</b>please follow the userName collection and then enter your userName accrodingly</p>
+<p><b>Example:</b> if your name is Shayan and if that name already exist into the userName collection then please using Shayan_1 or other symbol's containing your name</p>
+<br>
+
+	Name:&nbsp;<input type="text" name="name" id="name" placeholder="Please Enter Your Name Here" size="100">
+	<br>
+	<input type="button" name="join" value="Join" id="join" >
+
+
+<div id ="userlist"></div>
+
+
+<hr>
+
+
+<div id ="messagelist"></div>
+
+
+  Message: <input type="text" name="message" id="message" placeholder="please enter your message here" size="150"><br>
+  <input type="button" value="Send" name="send" id="send">
+  <input type="button" name="logout" value="Logout" id="logout">
+
+
+</body>
+</html>
